@@ -1,4 +1,11 @@
 // src/types/index.ts
+// 从 API 文档 GET /api/v1/conversations/{convId} 响应中得知会话的完整结构
+// 但在列表中，我们通常只需要部分元信息。
+export type ConversationMeta = {
+    id: string;
+    title: string;
+    updated_at: string;
+};
 
 // 单个内容块的类型
 export type TextContent = { type: 'text'; text: string };
@@ -28,9 +35,11 @@ export type MessageContentBlock =
     | ChartContent
     | ErrorContent;
 
-// 单条完整消息的结构
+// 单条完整消息的结构 (来自 API 文档)
 export interface Message {
-    id: string; // 使用 nanoid 或时间戳生成
+    id: string | number;
     role: 'user' | 'assistant';
     content: MessageContentBlock[];
+    conversation_id?: string;
+    created_at?: string;
 }

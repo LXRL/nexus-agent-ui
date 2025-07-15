@@ -1,11 +1,12 @@
 // src/store/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
+import conversationReducer from './slices/conversationSlice'; // 引入新的 reducer
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
-        // 未来在这里添加其他 slice, e.g. conversation: conversationReducer
+        conversation: conversationReducer, // 注册 reducer
     },
 });
 

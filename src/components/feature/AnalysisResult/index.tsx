@@ -1,6 +1,10 @@
 // src/components/feature/AnalysisResult/index.tsx
 import React from "react";
-import { Message, MessageContentBlock, TableContent } from "../../../types";
+import type {
+  Message,
+  MessageContentBlock,
+  TableContent,
+} from "../../../types";
 import CodeBlock from "./CodeBlock";
 import TableBlock from "./TableBlock";
 import ChartBlock from "./ChartBlock";

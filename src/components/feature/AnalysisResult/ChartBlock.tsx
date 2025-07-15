@@ -2,7 +2,7 @@
 import React from "react";
 import { Card } from "antd";
 import ReactECharts from "echarts-for-react";
-import { ChartContent, TableContent } from "../../../types";
+import type { ChartContent, TableContent } from "../../../types";
 
 interface Props {
   chartData: ChartContent["chart_recommendation"];

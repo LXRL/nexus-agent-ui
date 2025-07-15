@@ -2,14 +2,9 @@
 import React from "react";
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar"; // 引入 Sidebar 组件
 
 const { Sider, Content } = Layout;
-
-const siderStyle: React.CSSProperties = {
-  textAlign: "center",
-  color: "#fff",
-  backgroundColor: "var(--sidebar-background-color)",
-};
 
 const layoutStyle: React.CSSProperties = {
   minHeight: "100vh",
@@ -18,9 +13,8 @@ const layoutStyle: React.CSSProperties = {
 const AppLayout: React.FC = () => {
   return (
     <Layout style={layoutStyle}>
-      <Sider width="260" style={siderStyle}>
-        {/* 左侧边栏内容，如会话列表，将在这里构建 */}
-        Sidebar Content
+      <Sider width="260">
+        <Sidebar /> {/* 使用 Sidebar 组件替换占位符 */}
       </Sider>
       <Layout>
         <Content>

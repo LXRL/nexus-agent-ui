@@ -1,29 +1,67 @@
 // src/pages/Chat/index.tsx
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Input, Button, Form, Spin, Avatar, Empty } from "antd";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  Input,
+  Button,
+  Form,
+  Spin,
+  Avatar,
+  Empty,
+  message as antdMessage,
+} from "antd";
 import { SendOutlined, UserOutlined, RobotOutlined } from "@ant-design/icons";
-import { type RootState } from "../../store/store";
-import { type Message, type MessageContentBlock } from "../../types";
+import type { RootState, AppDispatch } from "../../store/store";
+import type { Message, MessageContentBlock } from "../../types";
+import {
+  setActiveConvId,
+  updateConversation,
+} from "../../store/slices/conversationSlice";
+import { getConversationHistory } from "../../api/conversationService";
 import AnalysisResult from "../../components/feature/AnalysisResult";
 import styles from "./Chat.module.css";
 
 const ChatPage: React.FC = () => {
   const [form] = Form.useForm();
-  const userId = useSelector((state: RootState) => state.auth.userId);
+  const dispatch = useDispatch<AppDispatch>();
+  const activeConvId = useSelector(
+    (state: RootState) => state.conversation.activeConvId
+  );
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [convId, setConvId] = useState("new"); // 'new' 用于开启新对话
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Effect to scroll to bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = async ({ question }: { question: string }) => {
-    if (!question.trim()) return;
+  // Effect to handle conversation switching
+  useEffect(() => {
+    const loadConversation = async () => {
+      if (activeConvId === "new") {
+        setMessages([]);
+        form.resetFields();
+      } else {
+        setIsLoading(true);
+        try {
+          const historyMessages = await getConversationHistory(activeConvId);
+          setMessages(historyMessages);
+        } catch (error) {
+          antdMessage.error("加载会话历史失败！");
+          setMessages([]);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadConversation();
+  }, [activeConvId]);
 
-    // 1. 添加用户消息到列表
+  const handleSendMessage = async ({ question }: { question: string }) => {
+    if (!question?.trim()) return;
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -33,7 +71,6 @@ const ChatPage: React.FC = () => {
     form.resetFields();
     setIsLoading(true);
 
-    // 2. 准备并添加一个空的助手消息，用于后续填充
     const assistantMessageId = (Date.now() + 1).toString();
     const initialAssistantMessage: Message = {
       id: assistantMessageId,
@@ -42,26 +79,41 @@ const ChatPage: React.FC = () => {
     };
     setMessages((prev) => [...prev, initialAssistantMessage]);
 
-    // 3. 建立 SSE 连接
+    const currentConvId = activeConvId;
     const query = encodeURIComponent(question);
-    const url = `http://localhost:8080/api/v1/conversations/${convId}/messages/stream?question=${query}`;
-    const eventSource = new EventSource(url, { withCredentials: true }); // withCredentials can be omitted if not needed
+    const url = `http://localhost:8080/api/v1/conversations/${currentConvId}/messages/stream?question=${query}`;
+    const eventSource = new EventSource(url); // Removed withCredentials as it's not standard for SSE unless CORS is configured for it
 
-    let fullTableData: any = null;
+    let newConvId: string | null = null;
+    let newConvTitle: string | null = null;
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const { type, payload } = data;
 
-      // 如果是第一次接收到消息，设置新的会话ID
-      // (这个逻辑需要和后端确认，通常ID会在第一个事件或header中返回)
-      // if (type === 'start' && payload.conversation_id) {
-      //   setConvId(payload.conversation_id);
-      // }
+      // 假设后端在 'start' 事件中返回新会话ID和标题
+      if (type === "start" && payload) {
+        const parsedPayload = JSON.parse(payload);
+        if (parsedPayload.conversation_id && currentConvId === "new") {
+          newConvId = parsedPayload.conversation_id;
+          newConvTitle = parsedPayload.title || question.substring(0, 20); // Use a part of question as title if not provided
+        }
+      }
 
       if (type === "done") {
         eventSource.close();
         setIsLoading(false);
+        // 如果这是一个新创建的会话, 更新store
+        if (newConvId && newConvTitle) {
+          dispatch(
+            updateConversation({
+              id: newConvId,
+              title: newConvTitle,
+              updated_at: new Date().toISOString(),
+            })
+          );
+          dispatch(setActiveConvId(newConvId));
+        }
         return;
       }
 
@@ -73,7 +125,6 @@ const ChatPage: React.FC = () => {
       setMessages((prev) =>
         prev.map((msg) => {
           if (msg.id === assistantMessageId) {
-            // 对于'text'类型，我们追加内容而不是创建新块
             if (newBlock.type === "text") {
               const lastContent = msg.content[msg.content.length - 1];
               if (lastContent && lastContent.type === "text") {
@@ -81,7 +132,6 @@ const ChatPage: React.FC = () => {
                 return { ...msg };
               }
             }
-            // 否则，添加一个新内容块
             return { ...msg, content: [...msg.content, newBlock] };
           }
           return msg;
@@ -109,8 +159,11 @@ const ChatPage: React.FC = () => {
   return (
     <div className={styles.chatPage}>
       <div className={styles.messagesContainer}>
-        {messages.length === 0 ? (
-          <Empty description="开始对话吧！" style={{ marginTop: "20vh" }} />
+        {messages.length === 0 && !isLoading ? (
+          <Empty
+            description="开始一段新的分析对话吧！"
+            style={{ marginTop: "20vh" }}
+          />
         ) : (
           messages.map((msg) => (
             <div
@@ -139,7 +192,9 @@ const ChatPage: React.FC = () => {
             </div>
           ))
         )}
-        {isLoading && <Spin style={{ alignSelf: "center", marginTop: 12 }} />}
+        {isLoading && (
+          <Spin style={{ position: "absolute", top: "50%", left: "50%" }} />
+        )}
         <div ref={messagesEndRef} />
       </div>
       <div className={styles.inputArea}>
@@ -152,7 +207,7 @@ const ChatPage: React.FC = () => {
           <Form.Item name="question" style={{ flex: 1 }}>
             <Input
               size="large"
-              placeholder="请输入你的问题，例如：分析每个国家的客户数量"
+              placeholder="请输入你的问题..."
               disabled={isLoading}
             />
           </Form.Item>
