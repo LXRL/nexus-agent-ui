@@ -1,0 +1,22 @@
+/* src/styles/_variables.css */
+:root {
+  /* 主要颜色 */
+  --primary-color: #1677ff;
+  --primary-color-hover: #4096ff;
+  --primary-color-active: #0958d9;
+
+  /* 布局颜色 */
+  --layout-background-color: #f0f2f5;
+  --component-background-color: #ffffff;
+  --sidebar-background-color: #001529;
+
+  /* 文本颜色 */
+  --text-color: rgba(0, 0, 0, 0.88);
+  --text-color-secondary: rgba(0, 0, 0, 0.65);
+  
+  /* 边框和分割线 */
+  --border-color-base: #d9d9d9;
+
+  /* 其他 */
+  --border-radius-base: 6px;
+}
