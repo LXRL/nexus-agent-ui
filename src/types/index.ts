@@ -1,25 +1,33 @@
 // src/types/index.ts
 
-// 【新增】资源栏定义
 export type ResourceColumn = {
     name: string;
     type: string;
 };
 
-// 【新增】资源内容定义
 export type DataTableContent = {
     data_source_id: string;
     columns: ResourceColumn[];
 };
 
-// 【新增】资源主类型
 export type Resource = {
     id: string;
-    resource_type: 'datatable' | 'api'; // 目前只支持datatable
+    resource_type: 'datatable' | 'api';
     name: string;
     description: string;
-    content: DataTableContent; // 未来可扩展为联合类型
+    content: DataTableContent;
     created_at: string;
+};
+
+// 【新增】资源组类型定义
+export type ResourceGroup = {
+    id: string;
+    name: string;
+    description: string;
+    owner_id: string;
+    created_at: string;
+    // 假设获取列表时，会附带组内资源的部分信息
+    resources?: Array<Pick<Resource, 'id' | 'name' | 'resource_type'>>;
 };
 
 export type ConversationMeta = {
@@ -29,7 +37,7 @@ export type ConversationMeta = {
 };
 
 export type AttributionFactor = {
-    dimension_value: string;
+    dimension_value: number;
     change_value: number;
     contribution: string;
     description: string;
@@ -41,7 +49,6 @@ export type AttributionResult = {
 };
 
 export type AttributionContent = { type: 'attribution'; data: AttributionResult };
-
 export type TextContent = { type: 'text'; text: string };
 export type SqlContent = { type: 'sql'; sql: string };
 export type TableContent = {
