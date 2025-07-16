@@ -10,12 +10,12 @@ import { listGroups } from "../../api/knowledgeService";
 import type { ResourceGroup } from "../../types";
 import CreateGroupModal from "./CreateGroupModal";
 import AddResourceToGroupModal from "./AddResourceToGroupModal";
-import DataDisplayWrapper from "../../components/common/DataDisplayWrapper"; // 【新增】
+import DataDisplayWrapper from "../../components/common/DataDisplayWrapper";
 
 const GroupTab: React.FC = () => {
   const [groups, setGroups] = useState<ResourceGroup[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null); // 【新增】
+  const [error, setError] = useState<Error | null>(null);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddResourceModalOpen, setIsAddResourceModalOpen] = useState(false);
@@ -25,12 +25,12 @@ const GroupTab: React.FC = () => {
 
   const fetchGroups = async () => {
     setIsLoading(true);
-    setError(null); // 【新增】
+    setError(null);
     try {
       const data = await listGroups();
       setGroups(data);
     } catch (err: any) {
-      setError(err); // 【修改】
+      setError(err);
     } finally {
       setIsLoading(false);
     }
@@ -45,11 +45,11 @@ const GroupTab: React.FC = () => {
     setIsAddResourceModalOpen(true);
   };
 
-  // 【新增】为List组件定制一个骨架屏
   const ListLoadingSkeleton = (
     <List
-      grid={{ gutter: 16, column: 3 }}
-      dataSource={[1, 2, 3]} // 渲染3个骨架卡片
+      // 【修改】骨架屏也使用响应式布局
+      grid={{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }}
+      dataSource={[1, 2, 3]}
       renderItem={() => (
         <List.Item>
           <Card>
@@ -70,16 +70,17 @@ const GroupTab: React.FC = () => {
       >
         创建新资源组
       </Button>
-      {/* 【修改】使用DataDisplayWrapper包裹 */}
       <DataDisplayWrapper
         isLoading={isLoading}
         error={error}
         data={groups}
         onRetry={fetchGroups}
-        loadingComponent={ListLoadingSkeleton} // 使用自定义的加载组件
+        loadingComponent={ListLoadingSkeleton}
       >
         <List
-          grid={{ gutter: 16, column: 3 }}
+          // 【修改】grid属性设为响应式对象
+          // 在特小/小屏幕上为1列，中等屏幕为2列，大屏幕及以上为3列
+          grid={{ gutter: 16, xs: 1, sm: 1, md: 2, lg: 3, xl: 3, xxl: 3 }}
           dataSource={groups}
           renderItem={(group) => (
             <List.Item>

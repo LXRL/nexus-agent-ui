@@ -5,26 +5,30 @@ import { PlusOutlined } from "@ant-design/icons";
 import { listResources } from "../../api/knowledgeService";
 import type { Resource } from "../../types";
 import RegisterResourceModal from "./RegisterResourceModal";
-import DataDisplayWrapper from "../../components/common/DataDisplayWrapper"; // 【新增】引入包装组件
+import DataDisplayWrapper from "../../components/common/DataDisplayWrapper";
 
 const columns = [
-  { title: "名称", dataIndex: "name", key: "name" },
-  { title: "描述", dataIndex: "description", key: "description" },
+  { title: "名称", dataIndex: "name", key: "name", width: 200, fixed: "left" }, // 【新增】固定列
+  { title: "描述", dataIndex: "description", key: "description", width: 300 },
   {
     title: "类型",
     dataIndex: "resource_type",
     key: "resource_type",
+    width: 120,
     render: (type: string) => <Tag color="cyan">{type.toUpperCase()}</Tag>,
   },
   {
     title: "创建时间",
     dataIndex: "created_at",
     key: "created_at",
+    width: 200,
     render: (date: string) => new Date(date).toLocaleString(),
   },
   {
     title: "操作",
     key: "action",
+    width: 120,
+    fixed: "right", // 【新增】固定列
     render: () => (
       <Space size="middle">
         <a>编辑</a>
@@ -37,18 +41,17 @@ const columns = [
 const ResourceTab: React.FC = () => {
   const [resources, setResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null); // 【新增】错误状态
+  const [error, setError] = useState<Error | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchResources = async () => {
     setIsLoading(true);
-    setError(null); // 【新增】重置错误状态
+    setError(null);
     try {
       const data = await listResources();
       setResources(data);
     } catch (err: any) {
-      setError(err); // 【修改】捕获并设置错误状态
-      // message.error('获取资源列表失败'); // 可以移除，由Result组件展示
+      setError(err);
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +76,6 @@ const ResourceTab: React.FC = () => {
       >
         注册新资源
       </Button>
-      {/* 【修改】使用DataDisplayWrapper包裹 */}
       <DataDisplayWrapper
         isLoading={isLoading}
         error={error}
@@ -83,6 +85,8 @@ const ResourceTab: React.FC = () => {
         <Table
           columns={columns}
           dataSource={resources.map((r) => ({ ...r, key: r.id }))}
+          // 【新增】x轴滚动，当表格内容宽度超过容器时出现滚动条
+          scroll={{ x: 960 }}
         />
       </DataDisplayWrapper>
       <RegisterResourceModal
