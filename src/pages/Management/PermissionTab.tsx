@@ -1,10 +1,11 @@
 // src/pages/Management/PermissionTab.tsx
 import React, { useState, useEffect } from "react";
 import { Button, Table, message, Space, Tag, Popconfirm } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { listPermissions } from "../../api/knowledgeService";
 import type { PermissionGrant } from "../../types";
 import GrantPermissionModal from "./GrantPermissionModal";
+import DataDisplayWrapper from "../../components/common/DataDisplayWrapper"; // 【新增】
 
 const columns = [
   { title: "用户", dataIndex: "target_user_name", key: "target_user_name" },
@@ -44,15 +45,17 @@ const columns = [
 const PermissionTab: React.FC = () => {
   const [permissions, setPermissions] = useState<PermissionGrant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null); // 【新增】
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchPermissions = async () => {
     setIsLoading(true);
+    setError(null); // 【新增】
     try {
       const data = await listPermissions();
       setPermissions(data);
-    } catch (error) {
-      message.error("获取权限列表失败");
+    } catch (err: any) {
+      setError(err); // 【修改】
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +67,7 @@ const PermissionTab: React.FC = () => {
 
   const handleGrantSuccess = () => {
     setIsModalOpen(false);
-    fetchPermissions(); // 成功后刷新列表
+    fetchPermissions();
   };
 
   return (
@@ -77,11 +80,18 @@ const PermissionTab: React.FC = () => {
       >
         授予新权限
       </Button>
-      <Table
-        columns={columns}
-        dataSource={permissions.map((p) => ({ ...p, key: p.id }))}
-        loading={isLoading}
-      />
+      {/* 【修改】使用DataDisplayWrapper包裹 */}
+      <DataDisplayWrapper
+        isLoading={isLoading}
+        error={error}
+        data={permissions}
+        onRetry={fetchPermissions}
+      >
+        <Table
+          columns={columns}
+          dataSource={permissions.map((p) => ({ ...p, key: p.id }))}
+        />
+      </DataDisplayWrapper>
       <GrantPermissionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
