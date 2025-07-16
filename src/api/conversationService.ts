@@ -1,6 +1,6 @@
 // src/api/conversationService.ts
 import apiClient from './index';
-import type { Message } from '../types';
+import type { Message, MessageContentBlock } from '../types';
 
 // API 文档中定义了获取指定会话历史的接口
 interface ConversationHistoryResponse {
@@ -16,6 +16,12 @@ interface ConversationHistoryResponse {
     }>
     created_at: string;
     updated_at: string;
+}
+
+// API 文档中定义了创建图卡的成功响应体
+interface CreateCardResponse {
+    card_id: string;
+    message: string;
 }
 
 // 获取单个会话的完整历史记录
@@ -59,4 +65,13 @@ export const getConversationHistory = async (convId: string): Promise<Message[]>
     });
 
     return parsedMessages;
+};
+
+// 【新增】根据会话最新结果创建图卡
+export const createCardFromConversation = async (convId: string, cardName: string): Promise<CreateCardResponse> => {
+    const response = await apiClient.post<CreateCardResponse>(
+        `/conversations/${convId}/actions/create_card`,
+        { card_name: cardName } // 根据 API 文档，请求体需要 card_name 字段
+    );
+    return response.data;
 };

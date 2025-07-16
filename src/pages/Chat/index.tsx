@@ -19,6 +19,7 @@ import {
 } from "../../store/slices/conversationSlice";
 import { getConversationHistory } from "../../api/conversationService";
 import AnalysisResult from "../../components/feature/AnalysisResult";
+import CreateCardModal from "../../components/feature/CreateCardModal"; // 引入模态框
 import styles from "./Chat.module.css";
 
 const ChatPage: React.FC = () => {
@@ -31,6 +32,9 @@ const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 【新增】模态框状态管理
+  const [isCreateCardModalOpen, setIsCreateCardModalOpen] = useState(false);
 
   // Effect to scroll to bottom of messages
   useEffect(() => {
@@ -82,7 +86,7 @@ const ChatPage: React.FC = () => {
     const currentConvId = activeConvId;
     const query = encodeURIComponent(question);
     const url = `http://localhost:8080/api/v1/conversations/${currentConvId}/messages/stream?question=${query}`;
-    const eventSource = new EventSource(url); // Removed withCredentials as it's not standard for SSE unless CORS is configured for it
+    const eventSource = new EventSource(url);
 
     let newConvId: string | null = null;
     let newConvTitle: string | null = null;
@@ -91,19 +95,17 @@ const ChatPage: React.FC = () => {
       const data = JSON.parse(event.data);
       const { type, payload } = data;
 
-      // 假设后端在 'start' 事件中返回新会话ID和标题
       if (type === "start" && payload) {
         const parsedPayload = JSON.parse(payload);
         if (parsedPayload.conversation_id && currentConvId === "new") {
           newConvId = parsedPayload.conversation_id;
-          newConvTitle = parsedPayload.title || question.substring(0, 20); // Use a part of question as title if not provided
+          newConvTitle = parsedPayload.title || question.substring(0, 20);
         }
       }
 
       if (type === "done") {
         eventSource.close();
         setIsLoading(false);
-        // 如果这是一个新创建的会话, 更新store
         if (newConvId && newConvTitle) {
           dispatch(
             updateConversation({
@@ -157,72 +159,85 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.chatPage}>
-      <div className={styles.messagesContainer}>
-        {messages.length === 0 && !isLoading ? (
-          <Empty
-            description="开始一段新的分析对话吧！"
-            style={{ marginTop: "20vh" }}
-          />
-        ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`${styles.messageWrapper} ${
-                msg.role === "user"
-                  ? styles.userMessage
-                  : styles.assistantMessage
-              }`}
-            >
-              <Avatar
-                icon={
-                  msg.role === "user" ? <UserOutlined /> : <RobotOutlined />
-                }
-                style={{
-                  alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-                }}
-              />
-              <div className={styles.messageContent}>
-                {msg.role === "user" ? (
-                  msg.content[0].type === "text" && msg.content[0].text
-                ) : (
-                  <AnalysisResult message={msg} />
-                )}
+    <>
+      <div className={styles.chatPage}>
+        <div className={styles.messagesContainer}>
+          {messages.length === 0 && !isLoading ? (
+            <Empty
+              description="开始一段新的分析对话吧！"
+              style={{ marginTop: "20vh" }}
+            />
+          ) : (
+            messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`${styles.messageWrapper} ${
+                  msg.role === "user"
+                    ? styles.userMessage
+                    : styles.assistantMessage
+                }`}
+              >
+                <Avatar
+                  icon={
+                    msg.role === "user" ? <UserOutlined /> : <RobotOutlined />
+                  }
+                  style={{
+                    alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+                  }}
+                />
+                <div className={styles.messageContent}>
+                  {msg.role === "user" ? (
+                    msg.content[0].type === "text" && msg.content[0].text
+                  ) : (
+                    <AnalysisResult
+                      message={msg}
+                      // 【新增】传递回调函数
+                      onSaveCard={() => setIsCreateCardModalOpen(true)}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          ))
-        )}
-        {isLoading && (
-          <Spin style={{ position: "absolute", top: "50%", left: "50%" }} />
-        )}
-        <div ref={messagesEndRef} />
+            ))
+          )}
+          {isLoading && (
+            <Spin style={{ position: "absolute", top: "50%", left: "50%" }} />
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+        <div className={styles.inputArea}>
+          <Form
+            form={form}
+            onFinish={handleSendMessage}
+            layout="inline"
+            style={{ width: "100%" }}
+          >
+            <Form.Item name="question" style={{ flex: 1 }}>
+              <Input
+                size="large"
+                placeholder="请输入你的问题..."
+                disabled={isLoading}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                icon={<SendOutlined />}
+                disabled={isLoading}
+              />
+            </Form.Item>
+          </Form>
+        </div>
       </div>
-      <div className={styles.inputArea}>
-        <Form
-          form={form}
-          onFinish={handleSendMessage}
-          layout="inline"
-          style={{ width: "100%" }}
-        >
-          <Form.Item name="question" style={{ flex: 1 }}>
-            <Input
-              size="large"
-              placeholder="请输入你的问题..."
-              disabled={isLoading}
-            />
-          </Form.Item>
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              size="large"
-              icon={<SendOutlined />}
-              disabled={isLoading}
-            />
-          </Form.Item>
-        </Form>
-      </div>
-    </div>
+
+      {/* 【新增】渲染模态框组件 */}
+      <CreateCardModal
+        isOpen={isCreateCardModalOpen}
+        onClose={() => setIsCreateCardModalOpen(false)}
+        convId={activeConvId === "new" ? null : activeConvId} // 只有在已有会话中才能创建
+      />
+    </>
   );
 };
 
