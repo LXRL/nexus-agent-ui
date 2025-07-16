@@ -1,5 +1,25 @@
 // src/types/index.ts
 
+// 【新增】用户类型 (用于模拟)
+export type User = {
+    id: string;
+    name: string;
+};
+
+// 【新增】权限授予记录类型
+export type PermissionGrant = {
+    id: string; // 假设权限记录本身也有唯一ID
+    target_user_id: string;
+    resource_id: string;
+    resource_type: 'datatable' | 'api' | 'group';
+    permission_level: 'view' | 'edit';
+    granted_at: string;
+    // 为了方便显示，关联一些名称信息
+    target_user_name?: string;
+    resource_name?: string;
+};
+
+
 export type ResourceColumn = {
     name: string;
     type: string;
@@ -19,14 +39,12 @@ export type Resource = {
     created_at: string;
 };
 
-// 【新增】资源组类型定义
 export type ResourceGroup = {
     id: string;
     name: string;
     description: string;
     owner_id: string;
     created_at: string;
-    // 假设获取列表时，会附带组内资源的部分信息
     resources?: Array<Pick<Resource, 'id' | 'name' | 'resource_type'>>;
 };
 
