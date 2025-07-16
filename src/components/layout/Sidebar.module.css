@@ -2,6 +2,7 @@
 .sidebar {
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* 【修改】使footer能固定在底部 */
   height: 100%;
   background-color: var(--sidebar-background-color);
 }
@@ -11,7 +12,7 @@
 }
 
 .convList {
-  flex: 1;
+  flex-grow: 1; /* 【新增】 */
   overflow-y: auto;
   padding: 0 8px;
 }
@@ -46,4 +47,9 @@
 .convDate {
   color: var(--text-color-secondary);
   font-size: 12px;
+}
+
+/* 【新增】底部样式 */
+.sidebarFooter {
+    padding: 16px;
 }

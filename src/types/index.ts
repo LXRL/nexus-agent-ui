@@ -1,14 +1,33 @@
 // src/types/index.ts
 
-// 从 API 文档 GET /api/v1/conversations/{convId} 响应中得知会话的完整结构
-// 但在列表中，我们通常只需要部分元信息。
+// 【新增】资源栏定义
+export type ResourceColumn = {
+    name: string;
+    type: string;
+};
+
+// 【新增】资源内容定义
+export type DataTableContent = {
+    data_source_id: string;
+    columns: ResourceColumn[];
+};
+
+// 【新增】资源主类型
+export type Resource = {
+    id: string;
+    resource_type: 'datatable' | 'api'; // 目前只支持datatable
+    name: string;
+    description: string;
+    content: DataTableContent; // 未来可扩展为联合类型
+    created_at: string;
+};
+
 export type ConversationMeta = {
     id: string;
     title: string;
     updated_at: string;
 };
 
-// 【新增】归因分析因子类型
 export type AttributionFactor = {
     dimension_value: string;
     change_value: number;
@@ -16,16 +35,13 @@ export type AttributionFactor = {
     description: string;
 };
 
-// 【新增】归因分析结果类型
 export type AttributionResult = {
     summary: string;
     factors: AttributionFactor[];
 };
 
-// 【新增】归因分析内容块类型
 export type AttributionContent = { type: 'attribution'; data: AttributionResult };
 
-// 单个内容块的类型
 export type TextContent = { type: 'text'; text: string };
 export type SqlContent = { type: 'sql'; sql: string };
 export type TableContent = {
@@ -52,9 +68,8 @@ export type MessageContentBlock =
     | TableContent
     | ChartContent
     | ErrorContent
-    | AttributionContent; // 【新增】
+    | AttributionContent;
 
-// 单条完整消息的结构 (来自 API 文档)
 export interface Message {
     id: string | number;
     role: 'user' | 'assistant';

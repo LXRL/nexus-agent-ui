@@ -1,0 +1,10 @@
+/* src/pages/Management/Management.module.css */
+.managementPage {
+    padding: 24px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.tabsCard {
+    margin-top: 24px;
+}

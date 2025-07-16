@@ -2,23 +2,23 @@
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import ChatPage from "../pages/Chat";
-// 未来会在这里引入管理页面
-// import ManagementPage from '../pages/Management';
+import ManagementPage from "../pages/Management"; // 【新增】引入管理页面
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <AppLayout />,
-    // errorElement: <ErrorPage />, // 可选的错误边界页面
+    // errorElement: <ErrorPage />,
     children: [
       {
-        index: true, // 默认子路由
+        index: true,
         element: <ChatPage />,
       },
-      // {
-      //   path: 'management',
-      //   element: <ManagementPage />,
-      // },
+      // 【新增】管理页面路由
+      {
+        path: "management",
+        element: <ManagementPage />,
+      },
     ],
   },
 ]);
