@@ -4,7 +4,7 @@ import { Card, Tabs, Typography } from "antd";
 import type { TabsProps } from "antd";
 import ResourceTab from "./ResourceTab";
 import GroupTab from "./GroupTab";
-import PermissionTab from "./PermissionTab"; // 【新增】
+import PermissionTab from "./PermissionTab"; // 确保 PermissionTab 已被正确引入
 import styles from "./Management.module.css";
 
 const items: TabsProps["items"] = [
@@ -17,13 +17,12 @@ const items: TabsProps["items"] = [
     key: "2",
     label: "资源组管理",
     children: <GroupTab />,
-    disabled: false,
   },
   {
     key: "3",
     label: "权限管理",
-    children: <PermissionTab />, // 【修改】
-    disabled: false, // 【修改】
+    // 【核心修改】确保这里的 children 指向正确的 <PermissionTab /> 组件
+    children: <PermissionTab />,
   },
 ];
 
