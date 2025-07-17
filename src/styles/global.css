@@ -8,7 +8,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--layout-background-color);
+
+  /* 使用新的CSS变量 */
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 /* 可以添加一些全局的 utility class */

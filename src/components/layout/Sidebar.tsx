@@ -1,9 +1,9 @@
 // src/components/layout/Sidebar.tsx
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Divider } from "antd"; // 【新增】Divider
-import { PlusOutlined, SettingOutlined } from "@ant-design/icons"; // 【新增】SettingOutlined
-import { useNavigate, useLocation } from "react-router-dom"; // 【新增】useNavigate, useLocation
+import { Button, Divider } from "antd";
+import { PlusOutlined, SettingOutlined } from "@ant-design/icons";
+import { useNavigate, useLocation } from "react-router-dom";
 import type { RootState, AppDispatch } from "../../store/store";
 import { setActiveConvId } from "../../store/slices/conversationSlice";
 import styles from "./Sidebar.module.css";
@@ -17,7 +17,6 @@ const Sidebar: React.FC = () => {
   );
 
   const handleNewChat = () => {
-    // 如果当前不在聊天页，先跳转
     if (location.pathname !== "/") {
       navigate("/");
     }
@@ -35,6 +34,7 @@ const Sidebar: React.FC = () => {
     <div className={styles.sidebar}>
       <div>
         <Button
+          // 【修改】确保这是一个主按钮，ConfigProvider会处理它的颜色
           type="primary"
           icon={<PlusOutlined />}
           className={styles.newChatButton}
@@ -62,15 +62,16 @@ const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* 【新增】底部设置入口 */}
       <div className={styles.sidebarFooter}>
-        <Divider
-          style={{ margin: "8px 0", borderColor: "rgba(255, 255, 255, 0.2)" }}
-        />
+        <Divider style={{ margin: "8px 0", borderColor: "var(--border)" }} />
         <Button
           type="text"
           icon={<SettingOutlined />}
-          style={{ color: "white", width: "100%", textAlign: "left" }}
+          style={{
+            color: "var(--foreground)",
+            width: "100%",
+            textAlign: "left",
+          }}
           onClick={() => navigate("/management")}
         >
           知识库管理

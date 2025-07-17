@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--component-background-color);
+  background-color: var(--background);
 }
 
 .messagesContainer {
@@ -16,27 +16,51 @@
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
+  max-width: 90%;
+}
+
+.userMessage {
+  align-self: flex-end;
+}
+
+.assistantMessage {
+  align-self: flex-start;
 }
 
 .userMessage .messageContent {
-  background-color: var(--primary-color);
-  color: white;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   align-self: flex-end;
 }
 
 .assistantMessage .messageContent {
-  background-color: #f0f0f0;
+  background-color: var(--card);
+  border: 1px solid var(--border);
   align-self: flex-start;
 }
 
 .messageContent {
-  max-width: 80%;
+  width: fit-content;
+  max-width: 100%;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   word-wrap: break-word;
 }
 
+/* --- 【核心修改区域】 --- */
+
 .inputArea {
   padding: 16px 24px;
-  border-top: 1px solid var(--border-color-base);
+  border-top: 1px solid var(--border);
+  background-color: var(--card);
+}
+
+/* 【修改】我们不再需要复杂的flex布局和全局覆盖 */
+/* 直接让 antd 的 inline 表单自己处理布局 */
+
+/* 我们只需要确保输入框本身在需要时能获取正确的颜色 */
+/* ConfigProvider 应该已经处理了大部分情况，但如果仍有问题，可以保留这个作为最后手段 */
+.inputArea :global(.ant-input) {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
 }

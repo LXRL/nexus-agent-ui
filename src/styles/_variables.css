@@ -1,22 +1,58 @@
 /* src/styles/_variables.css */
+
+/* Light Mode (default) */
 :root {
-  /* 主要颜色 */
-  --primary-color: #1677ff;
-  --primary-color-hover: #4096ff;
-  --primary-color-active: #0958d9;
+  --background: rgb(252, 252, 252);
+  --foreground: rgb(0, 0, 0);
+  --card: rgb(255, 255, 255);
+  --card-foreground: rgb(0, 0, 0);
+  --popover: rgb(252, 252, 252);
+  --popover-foreground: rgb(0, 0, 0);
+  --primary: rgb(0, 0, 0);
+  --primary-foreground: rgb(255, 255, 255);
+  --secondary: rgb(235, 235, 235);
+  --secondary-foreground: rgb(0, 0, 0);
+  --muted: rgb(245, 245, 245);
+  --muted-foreground: rgb(82, 82, 82);
+  --accent: rgb(235, 235, 235);
+  --accent-foreground: rgb(0, 0, 0);
+  --destructive: rgb(229, 75, 79);
+  --destructive-foreground: rgb(255, 255, 255);
+  --border: rgb(228, 228, 228);
+  --input: rgb(235, 235, 235);
+  --ring: rgb(0, 0, 0);
+  --chart-1: rgb(255, 174, 4);
+  --chart-2: rgb(45, 98, 239);
+  --chart-3: rgb(164, 164, 164);
+  --chart-4: rgb(228, 228, 228);
+  --chart-5: rgb(116, 116, 116);
+  --radius: 0.5rem;
+}
 
-  /* 布局颜色 */
-  --layout-background-color: #f0f2f5;
-  --component-background-color: #ffffff;
-  --sidebar-background-color: #001529;
-
-  /* 文本颜色 */
-  --text-color: rgba(0, 0, 0, 0.88);
-  --text-color-secondary: rgba(0, 0, 0, 0.65);
-  
-  /* 边框和分割线 */
-  --border-color-base: #d9d9d9;
-
-  /* 其他 */
-  --border-radius-base: 6px;
+/* Dark Mode */
+.dark {
+  --background: rgb(0, 0, 0);
+  --foreground: rgb(255, 255, 255);
+  --card: rgb(9, 9, 9);
+  --card-foreground: rgb(255, 255, 255);
+  --popover: rgb(18, 18, 18);
+  --popover-foreground: rgb(255, 255, 255);
+  --primary: rgb(255, 255, 255);
+  --primary-foreground: rgb(0, 0, 0);
+  --secondary: rgb(34, 34, 34);
+  --secondary-foreground: rgb(255, 255, 255);
+  --muted: rgb(29, 29, 29);
+  --muted-foreground: rgb(164, 164, 164);
+  --accent: rgb(51, 51, 51);
+  --accent-foreground: rgb(255, 255, 255);
+  --destructive: rgb(255, 91, 91);
+  --destructive-foreground: rgb(0, 0, 0);
+  --border: rgb(36, 36, 36);
+  --input: rgb(51, 51, 51);
+  --ring: rgb(164, 164, 164);
+  --chart-1: rgb(255, 174, 4);
+  --chart-2: rgb(38, 113, 244);
+  --chart-3: rgb(116, 116, 116);
+  --chart-4: rgb(82, 82, 82);
+  --chart-5: rgb(228, 228, 228);
 }

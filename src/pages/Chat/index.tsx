@@ -9,8 +9,7 @@ import {
   Avatar,
   Empty,
   message as antdMessage,
-  Popover,
-} from "antd";
+} from "antd"; // 【修改】移除 Popover
 import { SendOutlined, UserOutlined, RobotOutlined } from "@ant-design/icons";
 import type { RootState, AppDispatch } from "../../store/store";
 import type { Message, MessageContentBlock } from "../../types";
@@ -23,7 +22,7 @@ import {
   performAttributionAnalysis,
 } from "../../api/conversationService";
 import AnalysisResult from "../../components/feature/AnalysisResult";
-import AttributionReport from "../../components/feature/AttributionReport"; // 引入新组件
+import AttributionReport from "../../components/feature/AttributionReport";
 import CreateCardModal from "../../components/feature/CreateCardModal";
 import styles from "./Chat.module.css";
 
@@ -65,7 +64,6 @@ const ChatPage: React.FC = () => {
     loadConversation();
   }, [activeConvId]);
 
-  // 【新增】处理归因分析的函数
   const handlePerformAttribution = async () => {
     if (activeConvId === "new") {
       antdMessage.info("请先完成当前分析再进行归因。");
@@ -185,7 +183,6 @@ const ChatPage: React.FC = () => {
     };
   };
 
-  // 【新增】一个更具扩展性的消息渲染函数
   const renderMessageContent = (message: Message) => {
     if (message.role === "user") {
       return message.content[0].type === "text"
@@ -193,13 +190,11 @@ const ChatPage: React.FC = () => {
         : null;
     }
 
-    // 对于助手消息，检查其内容类型
     const firstBlock = message.content[0];
     if (firstBlock && firstBlock.type === "attribution") {
       return <AttributionReport data={firstBlock.data} />;
     }
 
-    // 默认渲染标准分析结果
     return (
       <AnalysisResult
         message={message}
@@ -248,34 +243,30 @@ const ChatPage: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
         <div className={styles.inputArea}>
-          <Popover
-            content="在一次分析结束后，点击结果下方的“归因分析”按钮来探索原因。"
-            trigger="focus"
+          {/* 【修改】移除外层的 Popover */}
+          <Form
+            form={form}
+            onFinish={handleSendMessage}
+            layout="inline"
+            style={{ width: "100%" }}
           >
-            <Form
-              form={form}
-              onFinish={handleSendMessage}
-              layout="inline"
-              style={{ width: "100%" }}
-            >
-              <Form.Item name="question" style={{ flex: 1 }}>
-                <Input
-                  size="large"
-                  placeholder="请输入你的问题..."
-                  disabled={isLoading}
-                />
-              </Form.Item>
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  icon={<SendOutlined />}
-                  disabled={isLoading}
-                />
-              </Form.Item>
-            </Form>
-          </Popover>
+            <Form.Item name="question" style={{ flex: 1 }}>
+              <Input
+                size="large"
+                placeholder="请输入你的问题..."
+                disabled={isLoading}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                size="large"
+                icon={<SendOutlined />}
+                disabled={isLoading}
+              />
+            </Form.Item>
+          </Form>
         </div>
       </div>
 
