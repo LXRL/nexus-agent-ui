@@ -1,15 +1,14 @@
 // src/components/layout/Sidebar.tsx
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Divider } from "antd";
-// 【修改】引入新的图标
-import { PlusOutlined, SettingOutlined, MenuOutlined } from "@ant-design/icons";
+// 【修改】引入 Tooltip 和新的 FormOutlined 图标
+import { Button, Divider, Tooltip } from "antd";
+import { FormOutlined, SettingOutlined, MenuOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { RootState, AppDispatch } from "../../store/store";
 import { setActiveConvId } from "../../store/slices/conversationSlice";
 import styles from "./Sidebar.module.css";
 
-// 【新增】定义组件的 Props 类型
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
@@ -40,7 +39,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   return (
     <div className={styles.sidebar}>
       <div>
-        {/* 【新增】侧边栏顶部，用于放置折叠按钮和新建对话按钮 */}
         <div className={styles.sidebarHeader}>
           <Button
             type="text"
@@ -48,56 +46,63 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
             onClick={onToggle}
             style={{ color: "var(--foreground)" }}
           />
-          {/* 【修改】当侧边栏折叠时，只显示图标 */}
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            className={styles.newChatButton}
-            onClick={handleNewChat}
-            style={{ width: collapsed ? "auto" : "100%" }}
-          >
-            {!collapsed && "新建对话"}
-          </Button>
+          {/* 【修改】将“新建对话”按钮改为带Tooltip的图标按钮 */}
+          <Tooltip title="新建对话" placement="right">
+            <Button
+              type="text"
+              icon={<FormOutlined />}
+              onClick={handleNewChat}
+              style={{ color: "var(--foreground)" }}
+            />
+          </Tooltip>
         </div>
         <div className={styles.convList}>
           {conversations.map((conv) => (
-            <div
+            // 【修改】为整个项目添加 Tooltip
+            <Tooltip
               key={conv.id}
-              className={`${styles.convItem} ${
-                activeConvId === conv.id && location.pathname === "/"
-                  ? styles.convItemActive
-                  : ""
-              }`}
-              onClick={() => handleSelectConv(conv.id)}
+              title={collapsed ? conv.title : ""} // 仅在折叠时显示Tooltip
+              placement="right"
             >
-              {/* 【修改】当折叠时，只显示标题的第一个字 */}
-              <div className={styles.convTitle}>
-                {collapsed ? conv.title.charAt(0) : conv.title || "新对话"}
-              </div>
-              {!collapsed && (
-                <div className={styles.convDate}>
-                  {new Date(conv.updated_at).toLocaleString()}
+              <div
+                className={`${styles.convItem} ${
+                  activeConvId === conv.id && location.pathname === "/"
+                    ? styles.convItemActive
+                    : ""
+                }`}
+                onClick={() => handleSelectConv(conv.id)}
+              >
+                <div className={styles.convTitle}>
+                  {collapsed ? conv.title.charAt(0) : conv.title || "新对话"}
                 </div>
-              )}
-            </div>
+                {!collapsed && (
+                  <div className={styles.convDate}>
+                    {new Date(conv.updated_at).toLocaleString()}
+                  </div>
+                )}
+              </div>
+            </Tooltip>
           ))}
         </div>
       </div>
 
       <div className={styles.sidebarFooter}>
         <Divider style={{ margin: "8px 0", borderColor: "var(--border)" }} />
-        <Button
-          type="text"
-          icon={<SettingOutlined />}
-          style={{
-            color: "var(--foreground)",
-            width: "100%",
-            textAlign: collapsed ? "center" : "left",
-          }}
-          onClick={() => navigate("/management")}
-        >
-          {!collapsed && "知识库管理"}
-        </Button>
+        {/* 【修改】为底部按钮也添加 Tooltip */}
+        <Tooltip title={collapsed ? "知识库管理" : ""} placement="right">
+          <Button
+            type="text"
+            icon={<SettingOutlined />}
+            style={{
+              color: "var(--foreground)",
+              width: "100%",
+              textAlign: "center",
+            }} // 统一居中
+            onClick={() => navigate("/management")}
+          >
+            {!collapsed && "知识库管理"}
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );
