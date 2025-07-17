@@ -9,9 +9,39 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* 使用新的CSS变量 */
   background-color: var(--background);
   color: var(--foreground);
 }
 
-/* 可以添加一些全局的 utility class */
+/* --- 【新增】Popconfirm 的强制样式覆盖 --- */
+/*
+  由于 ConfigProvider 未能完全覆盖 Popconfirm 的样式，
+  我们在此使用全局CSS选择器进行强力修正。
+*/
+
+/* 针对所有浮层（包括Popconfirm）的内部容器 */
+.ant-popover-inner {
+  background-color: var(--popover) !important;
+}
+
+/* 针对Popconfirm的文字和图标 */
+.ant-popconfirm .ant-popover-message {
+  color: var(--foreground) !important;
+}
+
+.ant-popconfirm .ant-popover-message>.anticon {
+  /* antd中这个黄色图标是 colorWarning，我们让它更通用 */
+  color: var(--chart-1) !important;
+}
+
+/* 针对Popconfirm内部的按钮 */
+.ant-popconfirm .ant-popover-buttons .ant-btn-default {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+  border-color: var(--border) !important;
+}
+
+.ant-popconfirm .ant-popover-buttons .ant-btn-primary {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}

@@ -21,10 +21,6 @@ function App() {
     document.body.classList.toggle("dark", isDarkMode);
   }, [isDarkMode]);
 
-  // 【新增】一个辅助函数来获取CSS变量值
-  const getCssVar = (varName: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-
   return (
     <ConfigProvider
       theme={{
@@ -40,6 +36,7 @@ function App() {
           borderRadius: 8, // 使用 0.5rem 对应的像素值，或直接设定
         },
         algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        // 【核心修改】针对特定组件进行样式覆盖
         // 【核心修改】针对特定组件进行样式覆盖
         components: {
           Button: {
