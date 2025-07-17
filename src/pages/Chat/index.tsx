@@ -1,16 +1,18 @@
 // src/pages/Chat/index.tsx
+// 【修改】从 React 引入 useRef 和 useEffect
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+// 【修改】从 antd 引入 InputRef 类型
 import {
   Input,
   Button,
   Form,
   Spin,
-  Avatar,
   Empty,
   message as antdMessage,
+  type InputRef,
 } from "antd";
-import { SendOutlined, UserOutlined, RobotOutlined } from "@ant-design/icons";
+import { SendOutlined } from "@ant-design/icons";
 import type { RootState, AppDispatch } from "../../store/store";
 import type { Message, MessageContentBlock } from "../../types";
 import {
@@ -33,6 +35,9 @@ const ChatPage: React.FC = () => {
     (state: RootState) => state.conversation.activeConvId
   );
 
+  // 【新增】创建一个 ref 来引用输入框组件
+  const inputRef = useRef<InputRef>(null);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -48,6 +53,8 @@ const ChatPage: React.FC = () => {
       if (activeConvId === "new") {
         setMessages([]);
         form.resetFields();
+        // 切换到新对话时也自动聚焦
+        inputRef.current?.focus();
       } else {
         setIsLoading(true);
         try {
@@ -63,6 +70,14 @@ const ChatPage: React.FC = () => {
     };
     loadConversation();
   }, [activeConvId]);
+
+  // 【新增】一个 Effect 来监听 isLoading 状态的变化
+  useEffect(() => {
+    // 当加载结束时（即 AI 响应完成），重新聚焦到输入框
+    if (!isLoading) {
+      inputRef.current?.focus();
+    }
+  }, [isLoading]);
 
   const handlePerformAttribution = async () => {
     if (activeConvId === "new") {
@@ -98,6 +113,8 @@ const ChatPage: React.FC = () => {
     };
     setMessages((prev) => [...prev, userMessage]);
     form.resetFields();
+    // 注意：我们不再在这里调用 focus()，而是通过上面的 useEffect 来处理
+
     setIsLoading(true);
 
     const assistantMessageId = (Date.now() + 1).toString();
@@ -223,14 +240,6 @@ const ChatPage: React.FC = () => {
                     : styles.assistantMessage
                 }`}
               >
-                <Avatar
-                  icon={
-                    msg.role === "user" ? <UserOutlined /> : <RobotOutlined />
-                  }
-                  style={{
-                    alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-                  }}
-                />
                 <div className={styles.messageContent}>
                   {renderMessageContent(msg)}
                 </div>
@@ -251,10 +260,12 @@ const ChatPage: React.FC = () => {
           >
             <Form.Item name="question" style={{ flex: 1 }}>
               <Input
+                // 【修改】将 ref 附加到 Input 组件上
+                ref={inputRef}
                 size="large"
                 placeholder="请输入你的问题..."
                 disabled={isLoading}
-                autoComplete="off" // 【修改】禁用自动完成
+                autoComplete="off"
               />
             </Form.Item>
             <Form.Item>

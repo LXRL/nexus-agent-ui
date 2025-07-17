@@ -10,33 +10,43 @@
   flex: 1;
   overflow-y: auto;
   padding: 24px;
+  /* 【新增】将消息列表设为Flex容器，以便控制子项对齐 */
+  display: flex;
+  flex-direction: column;
 }
 
 .messageWrapper {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  /* 减小一点边距 */
   display: flex;
-  flex-direction: column;
+  /* 让内部的 messageContent 可以被对齐 */
   max-width: 90%;
+  width: 100%;
+  /* 确保 wrapper 自身是块级元素 */
 }
 
 .userMessage {
+  justify-content: flex-end;
+  /* 【修改】让用户消息的内容（气泡）靠右 */
   align-self: flex-end;
+  /* 让整个消息包装器靠右 */
 }
 
 .assistantMessage {
+  justify-content: flex-start;
+  /* 【修改】让助手消息的内容（气泡）靠左 */
   align-self: flex-start;
+  /* 让整个消息包装器靠左 */
 }
 
 .userMessage .messageContent {
   background-color: var(--primary);
   color: var(--primary-foreground);
-  align-self: flex-end;
 }
 
 .assistantMessage .messageContent {
   background-color: var(--card);
   border: 1px solid var(--border);
-  align-self: flex-start;
 }
 
 .messageContent {
@@ -45,9 +55,9 @@
   padding: 12px 16px;
   border-radius: var(--radius);
   word-wrap: break-word;
+  /* 【新增】添加阴影以增加层次感 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
-
-/* --- 【核心修改区域】 --- */
 
 .inputArea {
   padding: 16px 24px;
@@ -55,11 +65,6 @@
   background-color: var(--card);
 }
 
-/* 【修改】我们不再需要复杂的flex布局和全局覆盖 */
-/* 直接让 antd 的 inline 表单自己处理布局 */
-
-/* 我们只需要确保输入框本身在需要时能获取正确的颜色 */
-/* ConfigProvider 应该已经处理了大部分情况，但如果仍有问题，可以保留这个作为最后手段 */
 .inputArea :global(.ant-input) {
   background-color: var(--background) !important;
   color: var(--foreground) !important;
