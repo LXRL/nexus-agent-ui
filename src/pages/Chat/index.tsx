@@ -9,7 +9,7 @@ import {
   Avatar,
   Empty,
   message as antdMessage,
-} from "antd"; // 【修改】移除 Popover
+} from "antd";
 import { SendOutlined, UserOutlined, RobotOutlined } from "@ant-design/icons";
 import type { RootState, AppDispatch } from "../../store/store";
 import type { Message, MessageContentBlock } from "../../types";
@@ -243,7 +243,6 @@ const ChatPage: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
         <div className={styles.inputArea}>
-          {/* 【修改】移除外层的 Popover */}
           <Form
             form={form}
             onFinish={handleSendMessage}
@@ -255,6 +254,7 @@ const ChatPage: React.FC = () => {
                 size="large"
                 placeholder="请输入你的问题..."
                 disabled={isLoading}
+                autoComplete="off" // 【修改】禁用自动完成
               />
             </Form.Item>
             <Form.Item>

@@ -26,7 +26,6 @@ const RegisterResourceModal: React.FC<Props> = ({
     try {
       const values = await form.validateFields();
       setIsLoading(true);
-      // 根据 API 文档，content 字段需要是对象
       const resourceData = {
         ...values,
         content: {
@@ -34,13 +33,11 @@ const RegisterResourceModal: React.FC<Props> = ({
           columns: values.columns,
         },
       };
-      // 删除多余的顶层字段
       delete resourceData.data_source_id;
 
-      // 此处我们仅模拟成功，真实场景应调用API
       console.log("Submitting:", resourceData);
       // await registerResource(resourceData);
-      await new Promise((res) => setTimeout(res, 1000)); // 模拟API调用
+      await new Promise((res) => setTimeout(res, 1000));
 
       message.success("资源注册成功！");
       onSuccess();
@@ -58,7 +55,10 @@ const RegisterResourceModal: React.FC<Props> = ({
         label="数据源ID"
         rules={[{ required: true }]}
       >
-        <Input placeholder="例如：ds-mysql-1" />
+        <Input
+          placeholder="例如：ds-mysql-1"
+          autoComplete="off" // 【修改】
+        />
       </Form.Item>
       <Form.List name="columns">
         {(fields, { add, remove }) => (
@@ -74,14 +74,14 @@ const RegisterResourceModal: React.FC<Props> = ({
                   name={[name, "name"]}
                   rules={[{ required: true, message: "请输入列名" }]}
                 >
-                  <Input placeholder="列名" />
+                  <Input placeholder="列名" autoComplete="off" />
                 </Form.Item>
                 <Form.Item
                   {...restField}
                   name={[name, "type"]}
                   rules={[{ required: true, message: "请输入类型" }]}
                 >
-                  <Input placeholder="列类型 (如 VARCHAR)" />
+                  <Input placeholder="列类型 (如 VARCHAR)" autoComplete="off" />
                 </Form.Item>
                 <MinusCircleOutlined onClick={() => remove(name)} />
               </Space>
@@ -121,10 +121,10 @@ const RegisterResourceModal: React.FC<Props> = ({
         }}
       >
         <Form.Item name="name" label="资源名称" rules={[{ required: true }]}>
-          <Input />
+          <Input autoComplete="off" />
         </Form.Item>
         <Form.Item name="description" label="描述" rules={[{ required: true }]}>
-          <Input.TextArea />
+          <Input.TextArea autoComplete="off" />
         </Form.Item>
         <Form.Item
           name="resource_type"

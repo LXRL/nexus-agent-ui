@@ -26,7 +26,7 @@ const CreateCardModal: React.FC<Props> = ({ isOpen, onClose, convId }) => {
         convId,
         values.cardName
       );
-      antdMessage.success(response.message || "图卡创建成功！"); // 使用后端的成功信息
+      antdMessage.success(response.message || "图卡创建成功！");
       handleClose();
     } catch (error: any) {
       antdMessage.error(error?.response?.data?.error || "创建失败，请重试");
@@ -71,7 +71,10 @@ const CreateCardModal: React.FC<Props> = ({ isOpen, onClose, convId }) => {
           label="图卡名称"
           rules={[{ required: true, message: "请输入图卡名称!" }]}
         >
-          <Input placeholder="例如：Q3季度各国客户数分析" />
+          <Input
+            placeholder="例如：Q3季度各国客户数分析"
+            autoComplete="off" // 【修改】禁用自动完成
+          />
         </Form.Item>
       </Form>
     </Modal>

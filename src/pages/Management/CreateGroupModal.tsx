@@ -19,8 +19,8 @@ const CreateGroupModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
       setIsLoading(true);
 
       console.log("Creating group with:", values);
-      // await createGroup(values); // 真实API调用
-      await new Promise((res) => setTimeout(res, 1000)); // 模拟API调用
+      // await createGroup(values);
+      await new Promise((res) => setTimeout(res, 1000));
 
       message.success("资源组创建成功！");
       onSuccess();
@@ -46,14 +46,14 @@ const CreateGroupModal: React.FC<Props> = ({ isOpen, onClose, onSuccess }) => {
           label="组名称"
           rules={[{ required: true, message: "请输入组名称" }]}
         >
-          <Input />
+          <Input autoComplete="off" />
         </Form.Item>
         <Form.Item
           name="description"
           label="描述"
           rules={[{ required: true, message: "请输入描述" }]}
         >
-          <Input.TextArea />
+          <Input.TextArea autoComplete="off" />
         </Form.Item>
       </Form>
     </Modal>
