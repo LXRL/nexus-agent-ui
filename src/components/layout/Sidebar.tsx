@@ -2,13 +2,20 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Divider } from "antd";
-import { PlusOutlined, SettingOutlined } from "@ant-design/icons";
+// 【修改】引入新的图标
+import { PlusOutlined, SettingOutlined, MenuOutlined } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { RootState, AppDispatch } from "../../store/store";
 import { setActiveConvId } from "../../store/slices/conversationSlice";
 import styles from "./Sidebar.module.css";
 
-const Sidebar: React.FC = () => {
+// 【新增】定义组件的 Props 类型
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,15 +40,25 @@ const Sidebar: React.FC = () => {
   return (
     <div className={styles.sidebar}>
       <div>
-        <Button
-          // 【修改】确保这是一个主按钮，ConfigProvider会处理它的颜色
-          type="primary"
-          icon={<PlusOutlined />}
-          className={styles.newChatButton}
-          onClick={handleNewChat}
-        >
-          新建对话
-        </Button>
+        {/* 【新增】侧边栏顶部，用于放置折叠按钮和新建对话按钮 */}
+        <div className={styles.sidebarHeader}>
+          <Button
+            type="text"
+            icon={<MenuOutlined />}
+            onClick={onToggle}
+            style={{ color: "var(--foreground)" }}
+          />
+          {/* 【修改】当侧边栏折叠时，只显示图标 */}
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            className={styles.newChatButton}
+            onClick={handleNewChat}
+            style={{ width: collapsed ? "auto" : "100%" }}
+          >
+            {!collapsed && "新建对话"}
+          </Button>
+        </div>
         <div className={styles.convList}>
           {conversations.map((conv) => (
             <div
@@ -53,10 +70,15 @@ const Sidebar: React.FC = () => {
               }`}
               onClick={() => handleSelectConv(conv.id)}
             >
-              <div className={styles.convTitle}>{conv.title || "新对话"}</div>
-              <div className={styles.convDate}>
-                {new Date(conv.updated_at).toLocaleString()}
+              {/* 【修改】当折叠时，只显示标题的第一个字 */}
+              <div className={styles.convTitle}>
+                {collapsed ? conv.title.charAt(0) : conv.title || "新对话"}
               </div>
+              {!collapsed && (
+                <div className={styles.convDate}>
+                  {new Date(conv.updated_at).toLocaleString()}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -70,11 +92,11 @@ const Sidebar: React.FC = () => {
           style={{
             color: "var(--foreground)",
             width: "100%",
-            textAlign: "left",
+            textAlign: collapsed ? "center" : "left",
           }}
           onClick={() => navigate("/management")}
         >
-          知识库管理
+          {!collapsed && "知识库管理"}
         </Button>
       </div>
     </div>

@@ -10,7 +10,6 @@ const layoutStyle: React.CSSProperties = {
   minHeight: "100vh",
 };
 
-// 【新增】为Sider定义一个内联样式，使其背景透明，从而采用内部Sidebar组件的背景色
 const siderStyle: React.CSSProperties = {
   background: "none",
 };
@@ -22,9 +21,7 @@ const AppLayout: React.FC = () => {
     <Layout style={layoutStyle}>
       <Sider
         width="260"
-        // 【修改】移除 antd 的 theme，让我们的CSS变量完全控制样式
-        // theme="dark"
-        style={siderStyle} // 【新增】
+        style={siderStyle}
         breakpoint="lg"
         onBreakpoint={(broken) => {
           setCollapsed(broken);
@@ -32,8 +29,14 @@ const AppLayout: React.FC = () => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        // 【修改】隐藏 Sider 自带的底部触发器
+        trigger={null}
       >
-        <Sidebar />
+        {/* 【修改】将状态和控制函数作为 props 传递给 Sidebar */}
+        <Sidebar
+          collapsed={collapsed}
+          onToggle={() => setCollapsed(!collapsed)}
+        />
       </Sider>
       <Layout>
         <Content>
