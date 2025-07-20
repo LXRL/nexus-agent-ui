@@ -37,6 +37,19 @@ export const deleteResource = async (id: string): Promise<{ message: string }> =
 };
 
 
+// 【新增】假设存在从资源组移除资源的 API
+export const removeResourceFromGroup = async (groupId: string, resourceId: string): Promise<{ message: string }> => {
+    // 假设存在 DELETE /knowledge/groups/{groupId}/resources/{resourceId} 接口
+    const response = await apiClient.delete<{ message: string }>(`/knowledge/groups/${groupId}/resources/${resourceId}`);
+    return response.data;
+};
+
+export const deleteGroup = async (groupId: string): Promise<{ message: string }> => {
+    // 假设存在 DELETE /knowledge/groups/{groupId} 接口
+    const response = await apiClient.delete<{ message: string }>(`/knowledge/groups/${groupId}`);
+    return response.data;
+};
+
 /**
  * 资源组相关API
  */
@@ -46,8 +59,11 @@ export const listGroups = async (): Promise<ResourceGroup[]> => {
   // return response.data;
   await new Promise(resolve => setTimeout(resolve, 500));
   return [
-    { id: 'group-xyz', name: 'Q3销售数据集合', description: '包含了所有与第三季度销售相关的报表和数据源', owner_id: 'user-a', created_at: new Date().toISOString(), resources: [{ id: 'dt-456', name: 'sales_data_2024_q3', resource_type: 'datatable' }] },
-    { id: 'group-abc', name: '客户数据资产', description: '所有关于客户维度的数据表', owner_id: 'user-a', created_at: new Date().toISOString(), resources: [{ id: 'dt-123', name: 'customers', resource_type: 'datatable' }] }
+    { id: 'group-xyz', name: 'Q3销售数据集合', description: '包含了所有与第三季度销售相关的报表和数据源', owner_id: 'user-a', created_at: new Date().toISOString(), resources: [{ id: 'dt-456', name: 'sales_data_2024_q3', resource_type: 'datatable' },{ id: 'dt-123', name: 'customers', resource_type: 'datatable' }] },
+    { id: 'group-abc', name: '客户数据资产', description: '所有关于客户维度的数据表', owner_id: 'user-a', created_at: new Date().toISOString(), resources: [{ id: 'dt-123', name: 'customers', resource_type: 'datatable' }] },
+    { id: 'group-abq', name: '客户数据资产', description: '所有关于客户维度的数据表', owner_id: 'user-a', created_at: new Date().toISOString(), resources: [{ id: 'dt-123', name: 'customers', resource_type: 'datatable' }] },
+    { id: 'group-abw', name: '客户数据资产', description: '所有关于客户维度的数据表', owner_id: 'user-a', created_at: new Date().toISOString(), resources: [{ id: 'dt-123', name: 'customers', resource_type: 'datatable' }] }
+
   ];
 };
 

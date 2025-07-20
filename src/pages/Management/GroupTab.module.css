@@ -1,0 +1,33 @@
+/* src/pages/Management/GroupTab.module.css */
+
+.groupCard {
+  /* 确保卡片有最小高度，在内容少时也能保持队形 */
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.groupCard :global(.ant-card-body) {
+  flex-grow: 1;
+  /* 让内容区域自动伸展 */
+}
+
+.groupDescription {
+  height: 44px;
+  /* 固定描述区域高度，防止长短不一导致卡片错位 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tagsContainer {
+  margin-top: 12px;
+}
+
+.resourceTag {
+  cursor: pointer;
+  /* 提示用户Tag是可交互的 */
+  margin-bottom: 8px;
+}
