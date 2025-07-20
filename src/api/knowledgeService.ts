@@ -100,3 +100,9 @@ export const grantPermission = async (permissionData: Omit<PermissionGrant, 'id'
   const response = await apiClient.post<{ message: string }>('/knowledge/permissions', permissionData); //
   return response.data;
 };
+
+export const updatePermission = async (id: string, permissionData: Pick<PermissionGrant, 'permission_level'>): Promise<{ message: string }> => {
+    // 假设存在 PUT /knowledge/permissions/{id} 接口
+    const response = await apiClient.put<{ message: string }>(`/knowledge/permissions/${id}`, permissionData);
+    return response.data;
+};
